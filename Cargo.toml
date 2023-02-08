@@ -1,0 +1,13 @@
+[package]
+name = "audvisdemo-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gl = "0.14.0"
+glfw = "0.50.0"
+libpulse-binding= "=2.25.0"
+libpulse-simple-binding = "=2.25.0"
+rustfft = "6.1.0"
+spectrum-analyzer = "1.2.6"
+

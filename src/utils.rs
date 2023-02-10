@@ -1,6 +1,6 @@
 use std::mem::*;
 use std::ptr::null;
-const vertexShaderSource: &'static str = "
+const VERTEX_SHADER_SOURCE: &'static str = "
 #version 330 core
 
 layout (location = 0) in vec3 pos;
@@ -8,7 +8,7 @@ layout (location = 0) in vec3 pos;
 void main() {
     gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
 }";
-const fragmentShaderSource: &'static str = "
+const FRAGMENT_SHADER_SOURCE: &'static str = "
 #version 330 core
 out vec4 FragColor;
 
@@ -20,22 +20,22 @@ pub type Vertex = [f32; 3];
 pub type TriIndexes = [u32; 3];
 pub fn compile_shaders() {
     unsafe {
-        let vertexShader = gl::CreateShader(gl::VERTEX_SHADER);
-        let v_str = std::ffi::CString::new(vertexShaderSource.as_bytes()).unwrap();
-        gl::ShaderSource(vertexShader, 1, &v_str.as_ptr(), null());
-        gl::CompileShader(vertexShader);
-        let fragmentShader = gl::CreateShader(gl::FRAGMENT_SHADER);
-        let f_str = std::ffi::CString::new(fragmentShaderSource.as_bytes()).unwrap();
-        gl::ShaderSource(fragmentShader, 1, &f_str.as_ptr(), null());
-        gl::CompileShader(fragmentShader);
-        let shaderProgram = gl::CreateProgram();
+        let vertex_shader = gl::CreateShader(gl::VERTEX_SHADER);
+        let v_str = std::ffi::CString::new(VERTEX_SHADER_SOURCE.as_bytes()).unwrap();
+        gl::ShaderSource(vertex_shader, 1, &v_str.as_ptr(), null());
+        gl::CompileShader(vertex_shader);
+        let fragment_shader = gl::CreateShader(gl::FRAGMENT_SHADER);
+        let f_str = std::ffi::CString::new(FRAGMENT_SHADER_SOURCE.as_bytes()).unwrap();
+        gl::ShaderSource(fragment_shader, 1, &f_str.as_ptr(), null());
+        gl::CompileShader(fragment_shader);
+        let shader_program = gl::CreateProgram();
         // I think I don't need to check compile errors... for now
-        gl::AttachShader(shaderProgram, vertexShader);
-        gl::AttachShader(shaderProgram, fragmentShader);
-        gl::LinkProgram(shaderProgram);
-        gl::UseProgram(shaderProgram);
-        gl::DeleteShader(vertexShader);
-        gl::DeleteShader(fragmentShader);
+        gl::AttachShader(shader_program, vertex_shader);
+        gl::AttachShader(shader_program, fragment_shader);
+        gl::LinkProgram(shader_program);
+        gl::UseProgram(shader_program);
+        gl::DeleteShader(vertex_shader);
+        gl::DeleteShader(fragment_shader);
     }
 }
 pub fn init_objects() -> (u32, u32, u32) {
@@ -65,14 +65,19 @@ pub fn link_attributes() {
         gl::EnableVertexAttribArray(0);
     }
 }
-pub const N: i32 = 1024;
+pub const N: i32 = 256;
 pub fn compute_bar_vertice(height: &[f32]) -> [Vertex; (N * 3 + 1) as usize] {
-    let l_unit = 2.0 / (N as f32);
+    let cap = (N as f32).log10();
+    // let l_unit = 2.0 / (N as f32);
     let mut res: Vec<Vertex> = Vec::new();
     res.push([-1.0, -1.0, 0.0]);
 
-    for _i in 1..=N {
-        res.push([res.last().unwrap()[0] + l_unit, -1.0, 0.0]);
+    for i in 1..=N {
+        res.push([
+            res.last().unwrap()[0] + (((i + 1) as f32 / i as f32).log10() / cap) * 2.0,
+            -1.0,
+            0.0,
+        ]);
     }
     res.push([-1.0, height[0] - 1.0, 0.0]);
     for i in 1..(N * 2) {

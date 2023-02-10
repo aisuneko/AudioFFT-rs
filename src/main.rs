@@ -19,7 +19,7 @@ fn main() {
     assert!(spec.is_valid());
     let s = Simple::new(
         None,
-        "audvisdemo-rs",
+        "audiofft-rs",
         Direction::Record,
         None,
         "visualizer",
@@ -31,7 +31,7 @@ fn main() {
     let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
     let (mut window, _events) = glfw
-        .create_window(1366, 768, "audvisdemo-rs", glfw::WindowMode::Windowed)
+        .create_window(1366, 768, "audiofft-rs", glfw::WindowMode::Windowed)
         .expect("Failed to create GLFW window.");
     window.make_current();
     window.set_key_polling(true);
@@ -46,13 +46,9 @@ fn main() {
         let buf2: Vec<f32> = buf1.iter().map(|&x| x as f32).collect();
         let hann_window = hann_window(&buf2);
         let spectrum_hann_window = samples_fft_to_spectrum(
-            // (windowed) samples
             &hann_window,
-            // sampling rate
             44100,
-            // optional frequency limit: e.g. only interested in frequencies 50 <= f <= 150?
             FrequencyLimit::Max(15000.0),
-            // optional scale
             Some(&divide_by_N),
         )
         .unwrap();
@@ -108,7 +104,6 @@ fn main() {
                 gl::STATIC_DRAW,
             );
             utils::link_attributes();
-            // gl::ClearColor(0.3, 0.3, 0.3, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
             gl::DrawElements(
                 gl::TRIANGLES,

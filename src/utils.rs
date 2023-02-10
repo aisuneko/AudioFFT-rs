@@ -68,7 +68,6 @@ pub fn link_attributes() {
 pub const N: i32 = 256;
 pub fn compute_bar_vertice(height: &[f32]) -> [Vertex; (N * 3 + 1) as usize] {
     let cap = (N as f32).log10();
-    // let l_unit = 2.0 / (N as f32);
     let mut res: Vec<Vertex> = Vec::new();
     res.push([-1.0, -1.0, 0.0]);
 
@@ -87,7 +86,6 @@ pub fn compute_bar_vertice(height: &[f32]) -> [Vertex; (N * 3 + 1) as usize] {
             0.0,
         ]);
     }
-    // println!("{:?}", res);
     res.as_slice()
         .try_into()
         .expect("slice with incorrect length")
@@ -100,7 +98,6 @@ pub fn compute_bar_indices() -> [TriIndexes; (N * 2) as usize] {
         res.push([j, j + 1, mid + j * 2]);
         res.push([j + 1, mid + j * 2, mid + j * 2 + 1]);
     }
-    // println!("{:?}", res);
     res.as_slice()
         .try_into()
         .expect("slice with incorrect length")
